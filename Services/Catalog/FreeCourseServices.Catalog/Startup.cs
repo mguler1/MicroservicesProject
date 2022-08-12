@@ -1,5 +1,6 @@
 using FreeCourseServices.Catalog.Services;
 using FreeCourseServices.Catalog.Settings;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +32,9 @@ namespace FreeCourseServices.Catalog
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ICourseService, CourseService>();
             services.AddAutoMapper(typeof(Startup));
-            services.AddControllers();
+            services.AddControllers(options => 
+            { options.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter());//Tüm contollerda authorize filtrelerini ekle
+            });
 
             services.Configure<DatabaseSettings>(Configuration.GetSection("DatabaseSettings"));
             services.AddSingleton<IDatabaseSettings>(sp=> 
@@ -43,8 +46,14 @@ namespace FreeCourseServices.Catalog
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "FreeCourseServices.Catalog", Version = "v1" });
             });
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
+            {
+                opt.Authority = Configuration["IdentityServerUrl"];
+                opt.Audience = "resource_catolog";
+                opt.RequireHttpsMetadata = false;
+            });
         }
-
+      
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -56,7 +65,7 @@ namespace FreeCourseServices.Catalog
             }
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
