@@ -1,2 +1,5 @@
 Services
  -CatalogApi=>5011
+ -PhotoStockApi=>5012
+Identity=>5001
+ 
