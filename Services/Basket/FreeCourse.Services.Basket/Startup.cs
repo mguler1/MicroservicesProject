@@ -1,10 +1,17 @@
+using FreeCourse.Services.Basket.Services;
+using FreeCourse.Services.Basket.Settings;
+using FreeCourse.Shared.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
@@ -25,11 +32,34 @@ namespace FreeCourse.Services.Basket
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var requireAuhtorizePolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
 
-            services.AddControllers();
+
+            services.AddHttpContextAccessor();//Shared Projesindeki GetUserId yi getiren servis
+            services.AddScoped<ISharedIdentityService, SharedIdentityService>();
+            services.AddScoped<IBasketService, BasketService>();
+            services.Configure<RedisSettings>(Configuration.GetSection("RedisSettings"));
+            services.AddSingleton<RedisService>(sp =>
+            {
+                var redisSettings = sp.GetRequiredService<IOptions<RedisSettings>>().Value;
+                var redis = new RedisService(redisSettings.Host, redisSettings.Port);
+                redis.Connect();
+                return redis;
+            });
+
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(new AuthorizeFilter(requireAuhtorizePolicy));//Tüm contollerda authorize filtrelerini ekle
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "FreeCourse.Services.Basket", Version = "v1" });
+            });
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
+            {
+                opt.Authority = Configuration["IdentityServerUrl"];
+                opt.Audience = "resource_catolog";
+                opt.RequireHttpsMetadata = false;
             });
         }
 
@@ -44,7 +74,7 @@ namespace FreeCourse.Services.Basket
             }
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
