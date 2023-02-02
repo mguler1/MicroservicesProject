@@ -18,6 +18,7 @@ namespace FreeCourseServices.Catalog.Services
 
         public CategoryService(IMapper mapper, IDatabaseSettings databaseSettings)
         {
+            //dbye bağlanma işlemi
             var client = new MongoClient(databaseSettings.ConnectionString);
             var database = client.GetDatabase(databaseSettings.DatabaseName);
             _categoryCollection = database.GetCollection<Category>(databaseSettings.CategoryCollectionName);

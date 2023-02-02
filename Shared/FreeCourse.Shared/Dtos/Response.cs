@@ -8,7 +8,7 @@ namespace FreeCourse.Shared.Dtos
    public class Response<T>
     {
         public T Data { get; private set; }
-        [JsonIgnore]//body de gönderilmeyecek code da ihtiyaç var sadece clientın görmesine gerek yok
+        [JsonIgnore]//body de gönderilmeyecek code da ihtiyaç var sadece, clientın görmesine gerek yok
         public int StatusCode { get; private set; }
         [JsonIgnore]
         public bool IsSuccessful { get; private set; }
