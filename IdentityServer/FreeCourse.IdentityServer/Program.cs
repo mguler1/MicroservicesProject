@@ -48,7 +48,7 @@ namespace FreeCourse.IdentityServer
                 {
                     var serviceProvider = scope.ServiceProvider;
                     var applicationDbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
-                    applicationDbContext.Database.Migrate();//db yoksa db oluştur ve migration klasörü oluştur.
+                     applicationDbContext.Database.Migrate();//db yoksa db oluştur ve migration klasörü oluştur.
                     var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                     if (!userManager.Users.Any())
                     {
