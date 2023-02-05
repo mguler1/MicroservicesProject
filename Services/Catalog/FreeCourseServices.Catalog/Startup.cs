@@ -33,9 +33,10 @@ namespace FreeCourseServices.Catalog
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ICourseService, CourseService>();
             services.AddAutoMapper(typeof(Startup));
-            services.AddControllers(options => 
-            { options.Filters.Add(new AuthorizeFilter());//Tüm contollerda authorize filtrelerini ekle
-            });
+            services.AddControllers();
+            //services.AddControllers(options => 
+            //{ options.Filters.Add(new AuthorizeFilter());//Tüm contollerda authorize filtrelerini ekle
+            //});
 
             services.Configure<DatabaseSettings>(Configuration.GetSection("DatabaseSettings"));
             services.AddSingleton<IDatabaseSettings>(sp=> 
@@ -47,12 +48,13 @@ namespace FreeCourseServices.Catalog
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "FreeCourseServices.Catalog", Version = "v1" });
             });
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
-            {
-                opt.Authority = Configuration["IdentityServerUrl"];
-                opt.Audience = "resource_catolog";
-                opt.RequireHttpsMetadata = false;
-            });
+            //IdentityServer Baðlantýsý
+            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
+            //{
+            //    opt.Authority = Configuration["IdentityServerUrl"];//Tokeni daðýtan servis
+            //    opt.Audience = "resource_catolog";
+            //    opt.RequireHttpsMetadata = false;
+            //});
         }
       
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,7 +68,7 @@ namespace FreeCourseServices.Catalog
             }
 
             app.UseRouting();
-            app.UseAuthentication();
+            //app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
