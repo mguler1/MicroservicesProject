@@ -35,7 +35,12 @@ namespace FreeCourse.Services.Basket
         {
             var requireAuhtorizePolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
-
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
+            {
+                opt.Authority = Configuration["IdentityServerUrl"];
+                opt.Audience = "resource_catolog";
+                opt.RequireHttpsMetadata = false;
+            });
             services.AddHttpContextAccessor();//Shared Projesindeki GetUserId yi getiren servis
             services.AddScoped<ISharedIdentityService, SharedIdentityService>();
             services.AddScoped<IBasketService, BasketService>();
@@ -56,12 +61,7 @@ namespace FreeCourse.Services.Basket
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "FreeCourse.Services.Basket", Version = "v1" });
             });
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
-            {
-                opt.Authority = Configuration["IdentityServerUrl"];
-                opt.Audience = "resource_catolog";
-                opt.RequireHttpsMetadata = false;
-            });
+           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

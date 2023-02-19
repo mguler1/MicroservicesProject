@@ -17,6 +17,7 @@ namespace FreeCourse.IdentityServer
             new ApiResource("resource_photo_stock"){Scopes={"photo_stock_fullpermission"}},
             new ApiResource("resource_basket"){Scopes={"basket_fullpermission"}},
             new ApiResource("resource_discount"){Scopes={"discount_fullpermission"}},
+            new ApiResource("resource_order"){Scopes={"order_fullpermission"}},
             new ApiResource(IdentityServerConstants.LocalApi.ScopeName)
         };
         public static IEnumerable<IdentityResource> IdentityResources =>
@@ -35,6 +36,7 @@ namespace FreeCourse.IdentityServer
                new ApiScope("photo_stock_fullpermission","PhotoStock Api için full erişim"),
                new ApiScope("basket_fullpermission","Basket Api için full erişim"),
                new ApiScope("discount_fullpermission","Discount Api için full erişim"),
+               new ApiScope("order_fullpermission","Order Api için full erişim"),
                new ApiScope(IdentityServerConstants.LocalApi.ScopeName)
               
             };
@@ -57,7 +59,7 @@ namespace FreeCourse.IdentityServer
                    AllowOfflineAccess=true,
                    ClientSecrets={new Secret("secret".Sha256())},
                    AllowedGrantTypes=GrantTypes.ResourceOwnerPassword,
-                   AllowedScopes={"basket_fullpermission","discount_fullpermission",IdentityServerConstants.StandardScopes.Email,IdentityServerConstants.StandardScopes.OpenId,
+                   AllowedScopes={"basket_fullpermission","discount_fullpermission,order_fullpermmission",IdentityServerConstants.StandardScopes.Email,IdentityServerConstants.StandardScopes.OpenId,
                                   IdentityServerConstants.StandardScopes.Profile,IdentityServerConstants.StandardScopes.OfflineAccess,IdentityServerConstants.LocalApi.ScopeName,"roles"},
                   AccessTokenLifetime=1*60*60,
                   RefreshTokenExpiration=TokenExpiration.Absolute,
